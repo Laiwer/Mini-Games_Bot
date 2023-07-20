@@ -151,12 +151,17 @@ def get_player_from_user_id(user_id:int) -> str:
     data = cursor.fetchone()
     return f"{data[0]} {data[1]}"
 
-def get_all_trophies_from_player():
+def get_all_trophies_from_player() -> dict:
     cursor.execute("""SELECT trophies, user_id FROM player""")
     top = {}
     for i in cursor.fetchall():
         top[i[1]] = i[0]
     return top
+
+def increase_played_mini_games(user_id:int):
+    all = get_data_from_player(user_id)[3]
+    cursor.execute("UPDATE player SET played_mini_games = (?) WHERE user_id = (?)", (all + 1, user_id))
+    db.commit()
 
 
 
@@ -199,7 +204,6 @@ def profit_by_search_emoji_on_field(user_id:int, profit:int, simbol:str):
     cursor.execute("UPDATE player SET trophies = (?) WHERE user_id = (?)", (trophies, user_id))
     db.commit()
 
-
 def update_record_stage_and_all_stage_search_emoji(user_id:int, size:int, stage:int):
     if size == 3:
         cursor.execute("SELECT record_stage_small, all_stage_small FROM mini_game_search_emoji_on_field WHERE user_id = (?)", (user_id,))
@@ -219,7 +223,6 @@ def update_record_stage_and_all_stage_search_emoji(user_id:int, size:int, stage:
         record = stage if stage > data[0] else data[0]
         cursor.execute("UPDATE mini_game_search_emoji_on_field SET record_stage_hard = (?), all_stage_hard = (?) WHERE user_id = (?)", (record, data[1] + stage, user_id))
         db.commit()
-
 
 def get_all_record_search_emoji_small_from_player():
     cursor.execute("""SELECT record_stage_small, user_id FROM mini_game_search_emoji_on_field""")
@@ -262,3 +265,50 @@ def get_all_all_stage_search_emoji_hard_from_player():
     for i in cursor.fetchall():
         top[i[1]] = i[0]
     return top
+
+
+
+# ?==================================================
+# ?|||           Соединить по порядку             |||
+# ?==================================================
+def add_mini_game_connect_in_order_in_data_base(user_id:int):
+    cursor.execute("INSERT INTO mg_connect_in_order (user_id) VALUES (?)", (user_id,))
+    db.commit()
+
+def get_connect_in_order(user_id:int) -> list:
+    cursor.execute("SELECT * FROM mg_connect_in_order WHERE user_id = (?)", (user_id,))
+    return cursor.fetchone()[1:]
+
+def update_now_number_connect_in_order(user_id:int, now_num:int):
+    cursor.execute("UPDATE mg_connect_in_order SET now_number = (?) WHERE user_id = (?)", (now_num, user_id))
+    db.commit()
+
+def update_win_connect_in_order(user_id:int, win:int):
+    cursor.execute("UPDATE mg_connect_in_order SET win = (?) WHERE user_id = (?)", (win, user_id))
+    db.commit()
+
+def increase_all_complite_game_connect_in_order(user_id:int):
+    all_game = get_connect_in_order(user_id)[2]
+    cursor.execute("UPDATE mg_connect_in_order SET all_complite_game = (?) WHERE user_id = (?)", (all_game + 1, user_id))
+    db.commit()
+
+def get_all_record_connect_in_order_from_player():
+    cursor.execute("""SELECT all_complite_game, user_id FROM mg_connect_in_order""")
+    top = {}
+    for i in cursor.fetchall():
+        top[i[1]] = i[0]
+    return top
+
+def get_game_field_connect_in_order(user_id:int) -> list:
+    cursor.execute("SELECT game_field FROM mg_connect_in_order WHERE user_id = (?)", (user_id,))
+    arr = [int(i) for i in cursor.fetchone()[0].split(",")]
+    return arr
+
+
+def update_game_field_connect_in_order(user_id:int, field:list):
+    if field != [0]:
+        str_field = ",".join(str(i) for i in field)
+    else:
+        str_field = "0"
+    cursor.execute("UPDATE mg_connect_in_order SET game_field = (?) WHERE user_id = (?)", (str_field, user_id))
+    db.commit()

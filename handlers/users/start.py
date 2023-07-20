@@ -2,7 +2,7 @@ from aiogram import types
 from aiogram.dispatcher.filters.builtin import CommandStart
 from dataBase.base import existe_in_db, add_user_in_data_base, existe_name_player, add_player_in_data_base, \
     update_emoji_player, add_last_message, add_mini_game_search_emoji_on_field_in_data_base, \
-    existe_referrer_id, get_data_from_user, get_data_from_player
+    existe_referrer_id, get_data_from_user, get_data_from_player, add_mini_game_connect_in_order_in_data_base
 from keyboards.default.main import main_keyboard
 from keyboards.default.emoji_keyboard import emoji_choice_keyboard
 from states.create_player import create_player
@@ -80,9 +80,11 @@ async def create_buisness_2(message: types.Message, state: FSMContext):
                 if message.text in "🟥🟧🟨🟩🟦🟪⬜🟫⬛🔴🟠🟡🟢🔵🟣⚪🟤⚫":
                     await message.answer(f"✅ Эмодзи принят.")
                     update_emoji_player(message.from_user.id, message.text)
+                    # Добавление данных про мини-игры в бд
                     add_mini_game_search_emoji_on_field_in_data_base(message.from_user.id)
-                    await message.answer("🎮 <b>Давай начнём играть!</b>", reply_markup=main_keyboard)
+                    add_mini_game_connect_in_order_in_data_base(message.from_user.id)
 
+                    await message.answer("🎮 <b>Давай начнём играть!</b>", reply_markup=main_keyboard)
                     if existe_referrer_id(get_data_from_user(message.from_user.id)[4]):
                         try:
                             refer = get_data_from_user(message.from_user.id)[4]

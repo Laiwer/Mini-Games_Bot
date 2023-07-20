@@ -27,6 +27,7 @@ async def my_profile(message: types.Message):
         msg += f"\n🕰 <b>Вы играете:</b> {timee[0]} мес. {timee[1]} дн. {timee[2]} ч." #
 
     msg += f"\n🏆 <b>Трофеи:</b> {data[2]}"
+    msg += f"\n🎮 <b>Сыграно всего мини-игр:</b> {data[3]}"
     await message.answer(msg, reply_markup=profile_keyboard)
 
 
@@ -49,6 +50,7 @@ async def update_my_profile(call: types.CallbackQuery):
         msg += f"\n🕰 <b>Вы играете:</b> {timee[0]} мес. {timee[1]} дн. {timee[2]} ч."
 
     msg += f"\n🏆 <b>Трофеи:</b> {data[2]}"
+    msg += f"\n🎮 <b>Сыграно всего мини-игр:</b> {data[3]}"
     try:
         await call.message.edit_text(msg, reply_markup=profile_keyboard)
     except Exception:

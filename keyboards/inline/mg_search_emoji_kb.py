@@ -30,7 +30,7 @@ start_search_emoji_keyboard = InlineKeyboardMarkup(
 continue_search_emoji_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text="⏩ Продолжить", callback_data="Начать")
+            InlineKeyboardButton(text="⏩ Продолжить", callback_data="continue_search_emoji_on_field")
         ]
     ]
 )

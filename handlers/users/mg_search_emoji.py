@@ -4,7 +4,7 @@ from random import randint
 import asyncio
 from dataBase.base import get_search_emoji_on_field, update_is_win_search_emoji, add_mini_game_search_emoji_on_field_in_data_base, \
     existe_in_db, update_difficulty_search_emoji, update_stage_search_emoji, profit_by_search_emoji_on_field, get_data_from_player, \
-    update_record_stage_and_all_stage_search_emoji, add_last_message
+    update_record_stage_and_all_stage_search_emoji, add_last_message, increase_played_mini_games
 from keyboards.inline.choice_mini_games_kb import mini_games_keyboard   
 from keyboards.inline.callback_back_page import back_page_callback
 from keyboards.inline.mg_search_emoji_kb import size_field_keyboard, start_search_emoji_keyboard, continue_search_emoji_keyboard
@@ -81,7 +81,13 @@ async def back_to_size_search_emoji(call: types.CallbackQuery):
 @dp.callback_query_handler(text="3x3")
 async def small_field(call: types.CallbackQuery):
     add_last_message(call.message.chat.id)
-    update_difficulty_search_emoji(call.message.chat.id, 3)
+    await call.answer()
+    data = get_search_emoji_on_field(call.message.chat.id)
+    if data[1] != 3:
+        update_difficulty_search_emoji(call.message.chat.id, 3)
+        update_record_stage_and_all_stage_search_emoji(call.message.chat.id, get_search_emoji_on_field(call.message.chat.id)[1], get_search_emoji_on_field(call.message.chat.id)[2]-1)
+        update_stage_search_emoji(call.message.chat.id, 1)
+        update_is_win_search_emoji(call.message.chat.id, 1)
     data = get_search_emoji_on_field(call.message.chat.id)
     stages = data[2]
     msg = f"💠 <b><u>Этап {stages}</u></b>"
@@ -101,7 +107,13 @@ async def small_field(call: types.CallbackQuery):
 @dp.callback_query_handler(text="5x5")
 async def medium_field(call: types.CallbackQuery):
     add_last_message(call.message.chat.id)
-    update_difficulty_search_emoji(call.message.chat.id, 5)
+    await call.answer()
+    data = get_search_emoji_on_field(call.message.chat.id)
+    if data[1] != 5:
+        update_difficulty_search_emoji(call.message.chat.id, 5)
+        update_record_stage_and_all_stage_search_emoji(call.message.chat.id, get_search_emoji_on_field(call.message.chat.id)[1], get_search_emoji_on_field(call.message.chat.id)[2]-1)
+        update_stage_search_emoji(call.message.chat.id, 1)
+        update_is_win_search_emoji(call.message.chat.id, 1)
     data = get_search_emoji_on_field(call.message.chat.id)
     stages = data[2]
     msg = f"💠 <b><u>Этап {stages}</u></b>"
@@ -121,7 +133,13 @@ async def medium_field(call: types.CallbackQuery):
 @dp.callback_query_handler(text="7x7")
 async def hard_field(call: types.CallbackQuery):
     add_last_message(call.message.chat.id)
-    update_difficulty_search_emoji(call.message.chat.id, 7)
+    await call.answer()
+    data = get_search_emoji_on_field(call.message.chat.id)
+    if data[1] != 7:
+        update_difficulty_search_emoji(call.message.chat.id, 7)
+        update_record_stage_and_all_stage_search_emoji(call.message.chat.id, get_search_emoji_on_field(call.message.chat.id)[1], get_search_emoji_on_field(call.message.chat.id)[2]-1)
+        update_stage_search_emoji(call.message.chat.id, 1)
+        update_is_win_search_emoji(call.message.chat.id, 1)
     data = get_search_emoji_on_field(call.message.chat.id)
     stages = data[2]
     msg = f"💠 <b><u>Этап {stages}</u></b>"
@@ -140,6 +158,15 @@ async def hard_field(call: types.CallbackQuery):
 
 @dp.callback_query_handler(text="Начать")
 async def start_search_emoji_on_field(call: types.CallbackQuery):
+    increase_played_mini_games(call.message.chat.id)
+    await call.answer()
+    try:
+        await continue_search_emoji_on_field(call)
+    except Exception: pass
+
+
+@dp.callback_query_handler(text="continue_search_emoji_on_field")
+async def continue_search_emoji_on_field(call: types.CallbackQuery):
     add_last_message(call.message.chat.id)
     await call.answer()
     S = get_search_emoji_on_field(call.message.chat.id)[1]

@@ -1,16 +1,17 @@
 from aiogram import types
 from loader import dp
 from dataBase.base import get_player_from_user_id, \
-    get_all_record_search_emoji_small_from_player, \
-    get_all_record_search_emoji_medium_from_player, get_all_record_search_emoji_hard_from_player, \
-    add_last_message, get_all_count_referal_from_player, get_all_trophies_from_player
+    get_all_record_search_emoji_small_from_player, get_all_record_search_emoji_medium_from_player, \
+    get_all_record_search_emoji_hard_from_player, add_last_message, get_all_count_referal_from_player, \
+    get_all_trophies_from_player, get_all_record_connect_in_order_from_player
 from keyboards.inline.all_ratings import all_ratings_keyboard, \
     mini_games_rating_keyboard, \
     record_search_emoji_small_rating_keyboard_top, record_search_emoji_small_rating_keyboard_near, \
     record_search_emoji_medium_rating_keyboard_top, record_search_emoji_medium_rating_keyboard_near, \
     record_search_emoji_hard_rating_keyboard_top, record_search_emoji_hard_rating_keyboard_near, \
     mini_game_record_search_emoji_rating_keyboard, count_referal_rating_keyboard_top, \
-    count_referal_rating_keyboard_near, trophies_rating_keyboard_top, trophies_rating_keyboard_near
+    count_referal_rating_keyboard_near, trophies_rating_keyboard_top, trophies_rating_keyboard_near, \
+    record_connect_in_order_keyboard_top, record_connect_in_order_keyboard_near
 from keyboards.inline.callback_back_page import back_page_callback
 from keyboards.inline.callback_ratings import ratings_callback
 
@@ -40,7 +41,7 @@ async def back_to_all_rating_mini_game(call: types.CallbackQuery):
 async def all_count_trophies(call: types.CallbackQuery):
     add_last_message(call.message.chat.id)
     await call.answer()
-    msg = show_first_five_lider("🏆 Рейтинг игроков по количеству трофеев", get_all_trophies_from_player(), call.message.chat.id, after_place=" 🏆")
+    msg = show_first_five_lider("🏆 Рейтинг по количеству трофеев", get_all_trophies_from_player(), call.message.chat.id, after_place=" 🏆")
     try:
         await call.message.edit_text(msg, reply_markup=trophies_rating_keyboard_near)
     except Exception: pass
@@ -59,7 +60,7 @@ async def show_rating_all_count_trophies_top(call: types.CallbackQuery):
 async def show_rating_all_count_trophies_player(call: types.CallbackQuery):
     add_last_message(call.message.chat.id)
     await call.answer()
-    msg = show_players_near_player("🏆 Рейтинг игроков по количеству трофеев", get_all_trophies_from_player(), call.message.chat.id, after_place=" 🏆")
+    msg = show_players_near_player("🏆 Рейтинг по количеству трофеев", get_all_trophies_from_player(), call.message.chat.id, after_place=" 🏆")
     try:
         await call.message.edit_text(msg, reply_markup=trophies_rating_keyboard_top)
     except Exception: pass
@@ -71,7 +72,7 @@ async def show_rating_all_count_trophies_player(call: types.CallbackQuery):
 async def rating_count_referal(call: types.CallbackQuery):
     add_last_message(call.message.chat.id)
     await call.answer()
-    msg = show_first_five_lider("👥 Рейтинг игроков по количествам рефералов", get_all_count_referal_from_player(), call.message.chat.id, after_place=" чел.")
+    msg = show_first_five_lider("👥 Рейтинг по количествам рефералов", get_all_count_referal_from_player(), call.message.chat.id, after_place=" чел.")
     try:
         await call.message.edit_text(msg, reply_markup=count_referal_rating_keyboard_near)
     except Exception: pass
@@ -90,7 +91,7 @@ async def show_rating_count_referal_top(call: types.CallbackQuery):
 async def show_rating_count_referal_player(call: types.CallbackQuery):
     add_last_message(call.message.chat.id)
     await call.answer()
-    msg = show_players_near_player("👥 Рейтинг игроков по количествам рефералов", get_all_count_referal_from_player(), call.message.chat.id, after_place=" чел.")
+    msg = show_players_near_player("👥 Рейтинг по количествам рефералов", get_all_count_referal_from_player(), call.message.chat.id, after_place=" чел.")
     try:
         await call.message.edit_text(msg, reply_markup=count_referal_rating_keyboard_top)
     except Exception: pass
@@ -115,6 +116,38 @@ async def rating_mini_game_record_search_emoji(call: types.CallbackQuery):
 @dp.callback_query_handler(text="ratings_mini_games_size")
 async def rating_mini_game_record_searc_emoji_size(call: types.CallbackQuery):
     await rating_mini_game_record_search_emoji(call)
+
+
+
+#!    Top connect in order
+@dp.callback_query_handler(text="record_connect_in_order")
+async def rating_mg_connect_in_order(call: types.CallbackQuery):
+    add_last_message(call.message.chat.id)
+    await call.answer()
+    msg = show_first_five_lider("#️⃣🏆 Рейтинг по пройденным играм в \"🔢 Соединить по порядку\"", get_all_record_connect_in_order_from_player(), call.message.chat.id, after_place=" игр.")
+    try:
+        await call.message.edit_text(msg, reply_markup=record_connect_in_order_keyboard_near)
+    except Exception: pass
+
+
+@dp.callback_query_handler(ratings_callback.filter(form="top", top="connect_in_order"))
+async def show_rating_connect_in_order_record_top(call: types.CallbackQuery):
+    add_last_message(call.message.chat.id)
+    await call.answer()
+    try:
+        await rating_mg_connect_in_order(call)
+    except Exception: pass
+
+
+@dp.callback_query_handler(ratings_callback.filter(form="you", top="connect_in_order"))
+async def show_rating_connect_in_order_record_player(call: types.CallbackQuery):
+    add_last_message(call.message.chat.id)
+    await call.answer()
+    msg = show_players_near_player("#️⃣🏆 Рейтинг по пройденным играм в \"🔢 Соединить по порядку\"", get_all_record_connect_in_order_from_player(), call.message.chat.id, after_place=" игр.")
+    try:
+        await call.message.edit_text(msg, reply_markup=record_connect_in_order_keyboard_top)
+    except Exception: pass
+
 
 
 #!    Top search emoji record 3x3
